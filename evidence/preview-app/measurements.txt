@@ -1,0 +1,29 @@
+# Excerpt: this capture session also covered a separate, unrelated
+# test case; its sections were removed. Remaining lines are verbatim.
+
+================================================================
+  Preview.app evidence (default image viewer on macOS)
+================================================================
+
+Captured: 2026-05-22, native arm64 on macOS 26.5 (25F71), Apple M3
+Methodology: file opened via Launch Services, then `ps -o rss`
+sampled every 500 ms for 6–15 seconds while Preview decoded and
+displayed the file. Memory shown in MiB (1024 KiB).
+
+TEST 2 — Malicious EXR PoC (384 bytes) via `open -a Preview`
+─────────────────────────────────────────────────────────
+   [1] Preview rss=4 MB
+   [2..30] Preview rss=71-72 MB  ← stable at ~72 MiB
+
+Preview.app handles the EXR PoC gracefully. The 1.85 GiB commit
+measured elsewhere occurs through the lower-level `CGImageSource`
+API with `kCGImageSourceShouldCacheImmediately` and the thumbnail
+flags. Preview.app uses different decode flags and does not reach
+the high-commit branch.
+
+
+SUMMARY
+─────────────────────────────────────────────────────────
+EXR PoC opens to ~72 MiB in Preview.app — Preview is not the
+   user-facing surface for this finding; the EXR impact is via the
+   lower-level CGImageSource caching/thumbnail path.

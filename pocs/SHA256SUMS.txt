@@ -1,0 +1,2 @@
+# PoC integrity (SHA-256)
+c258ff1a045d8021d8c8717f8c465b8c87b9a7b2a07e858c01bfa0cd5600fcb3  exr.exr

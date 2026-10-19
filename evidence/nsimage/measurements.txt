@@ -1,0 +1,33 @@
+# Excerpt: this capture session also covered a separate, unrelated
+# test case; its sections were removed. Remaining lines are verbatim.
+
+================================================================
+  AppKit (NSImage + NSBitmapImageRep) — per-step VM evidence
+================================================================
+Native arm64 process on macOS 26.5 (25F71). Tool source:
+`nsimage_steps.m` in this folder — samples resident memory via
+`task_info(TASK_VM_INFO)` after each API call, so the source of
+any memory commit is unambiguous.
+
+EXR PoC (pocs/exr.exr, 384 bytes)
+─────────────────────────────────────────────────────────
+[start]   resident=8.03 MiB
+  after NSData                          resident=8.08 MiB     Δ=+48 KiB
+  after NSImage initWithData:           resident=11.03 MiB    Δ=+3.0 MiB
+  after [img size]                      resident=11.05 MiB    Δ=+3.0 MiB
+  after [img representations]           resident=11.05 MiB    Δ=+3.0 MiB
+  after rep pixel access                resident=11.05 MiB    Δ=+3.0 MiB
+  after NSBitmapImageRep initWithData:  resident=1561.75 MiB  Δ=+1.52 GiB  ←
+  after NSBitmapImageRep pixel access   resident=1561.75 MiB
+  after @autoreleasepool drained        resident=1561.89 MiB
+
+The commit happens specifically at `NSBitmapImageRep initWithData:`.
+`NSImage initWithData:` by itself only allocates ~3 MiB. The
+AppKit API surface for this EXR finding is therefore
+`NSBitmapImageRep initWithData:`, not `NSImage initWithData:`.
+
+CONCLUSION
+─────────────────────────────────────────────────────────
+EXR is reachable through at least:
+  - CGImageSource (with shouldCacheImmediately + thumbnail flags) → ~1.85 GiB
+  - NSBitmapImageRep initWithData:                                → ~1.52 GiB

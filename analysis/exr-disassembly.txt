@@ -1,0 +1,92 @@
+================================================================
+Disassembly of libAppleEXR.dylib
+Function: DecompressedLocations::CreateDecompressedLocations
+         (TileSize const&, axr_size_t, axr_size_t, axr_size_t)
+
+Extracted from /usr/lib/libAppleEXR.dylib on macOS 26.5 (25F71)
+using `ipsw dyld extract` against dyld_shared_cache_x86_64.
+
+Tool: llvm-objdump 22.1.5
+================================================================
+
+
+libAppleEXR.dylib:	file format mach-o 64-bit x86-64
+
+Disassembly of section __TEXT,__text:
+
+00007ffa15917b34 <__ZN21DecompressedLocations27CreateDecompressedLocationsERK8TileSize10axr_size_tS3_S3_>:
+7ffa15917b34: 55                       	pushq	%rbp
+7ffa15917b35: 48 89 e5                 	movq	%rsp, %rbp
+7ffa15917b38: 41 57                    	pushq	%r15
+7ffa15917b3a: 41 56                    	pushq	%r14
+7ffa15917b3c: 41 55                    	pushq	%r13
+7ffa15917b3e: 41 54                    	pushq	%r12
+7ffa15917b40: 53                       	pushq	%rbx
+7ffa15917b41: 50                       	pushq	%rax
+7ffa15917b42: 49 89 d4                 	movq	%rdx, %r12
+7ffa15917b45: 49 89 f7                 	movq	%rsi, %r15
+7ffa15917b48: 44 89 fb                 	movl	%r15d, %ebx
+7ffa15917b4b: 49 89 d5                 	movq	%rdx, %r13
+7ffa15917b4e: 49 c1 ed 1d              	shrq	$0x1d, %r13
+7ffa15917b52: 49 83 e5 f8              	andq	$-0x8, %r13
+7ffa15917b56: 48 89 d8                 	movq	%rbx, %rax
+7ffa15917b59: 49 f7 e5                 	mulq	%r13
+7ffa15917b5c: 70 53                    	jo	0x7ffa15917bb1 <__ZN21DecompressedLocations27CreateDecompressedLocationsERK8TileSize10axr_size_tS3_S3_+0x7d>
+7ffa15917b5e: 4c 8d 34 dd 18 00 00 00  	leaq	0x18(,%rbx,8), %r14
+7ffa15917b66: 4c 01 f0                 	addq	%r14, %rax
+7ffa15917b69: 72 46                    	jb	0x7ffa15917bb1 <__ZN21DecompressedLocations27CreateDecompressedLocationsERK8TileSize10axr_size_tS3_S3_+0x7d>
+7ffa15917b6b: 48 89 4d d0              	movq	%rcx, -0x30(%rbp)
+7ffa15917b6f: 48 be c1 fa 4f 50 40 00 00 01    	movabsq	$0x1000040504ffac1, %rsi ## imm = 0x1000040504FFAC1
+7ffa15917b79: 48 89 c7                 	movq	%rax, %rdi
+7ffa15917b7c: e8 6d 09 02 00           	callq	0x7ffa159384ee <_vsnprintf+0x7ffa159384ee>
+7ffa15917b81: 48 85 c0                 	testq	%rax, %rax
+7ffa15917b84: 74 2b                    	je	0x7ffa15917bb1 <__ZN21DecompressedLocations27CreateDecompressedLocationsERK8TileSize10axr_size_tS3_S3_+0x7d>
+7ffa15917b86: 4c 89 60 08              	movq	%r12, 0x8(%rax)
+7ffa15917b8a: 48 8b 4d d0              	movq	-0x30(%rbp), %rcx
+7ffa15917b8e: 48 89 48 10              	movq	%rcx, 0x10(%rax)
+7ffa15917b92: 4c 89 38                 	movq	%r15, (%rax)
+7ffa15917b95: 48 85 db                 	testq	%rbx, %rbx
+7ffa15917b98: 74 19                    	je	0x7ffa15917bb3 <__ZN21DecompressedLocations27CreateDecompressedLocationsERK8TileSize10axr_size_tS3_S3_+0x7f>
+7ffa15917b9a: 49 01 c6                 	addq	%rax, %r14
+7ffa15917b9d: 31 c9                    	xorl	%ecx, %ecx
+7ffa15917b9f: 4c 89 74 c8 18           	movq	%r14, 0x18(%rax,%rcx,8)
+7ffa15917ba4: 4d 01 ee                 	addq	%r13, %r14
+7ffa15917ba7: 48 ff c1                 	incq	%rcx
+7ffa15917baa: 48 39 d9                 	cmpq	%rbx, %rcx
+7ffa15917bad: 72 f0                    	jb	0x7ffa15917b9f <__ZN21DecompressedLocations27CreateDecompressedLocationsERK8TileSize10axr_size_tS3_S3_+0x6b>
+7ffa15917baf: eb 02                    	jmp	0x7ffa15917bb3 <__ZN21DecompressedLocations27CreateDecompressedLocationsERK8TileSize10axr_size_tS3_S3_+0x7f>
+7ffa15917bb1: 31 c0                    	xorl	%eax, %eax
+7ffa15917bb3: 48 83 c4 08              	addq	$0x8, %rsp
+7ffa15917bb7: 5b                       	popq	%rbx
+7ffa15917bb8: 41 5c                    	popq	%r12
+7ffa15917bba: 41 5d                    	popq	%r13
+7ffa15917bbc: 41 5e                    	popq	%r14
+7ffa15917bbe: 41 5f                    	popq	%r15
+7ffa15917bc0: 5d                       	popq	%rbp
+7ffa15917bc1: c3                       	retq
+
+================================================================
+Annotation
+
+7ffa15917b48: mov   r15d, ebx    ; ebx = arg2 (uint32 of axr_size_t)
+7ffa15917b4e: shr   r13, 0x1d    ; r13 = arg3 >> 29
+7ffa15917b52: and   r13, ~7      ; round to multiple of 8
+7ffa15917b59: mul   r13          ; rax = ebx * r13
+7ffa15917b5c: jo    fail         ; catches 64-bit overflow
+7ffa15917b5e: lea   r14, [24 + rbx*8]
+                                 ; r14 = 24 + arg2*8 (per-level pointer table + header)
+7ffa15917b66: add   r14, rax     ; rax += r14
+7ffa15917b69: jb    fail         ; catches carry
+[...]
+7ffa15917b7c: callq <allocator>  ; <-- size argument is the value
+                                  ;     computed above; observed
+                                  ;     runtime commit ≈ 1.85 GiB
+
+The bug is that no early bound on arg2 / arg3 is applied.
+Values that are individually large but do not overflow
+`uint64_t` reach the allocator call unchanged. The overflow
+guards above only protect the ARITHMETIC, not the INPUTS.
+The target of the call is shown as a stub by llvm-objdump; the
+important point is the size argument prepared just above, which
+runtime evidence shows produces a ~1.85 GiB resident commit.
+
