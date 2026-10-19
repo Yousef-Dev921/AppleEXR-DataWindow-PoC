@@ -1,0 +1,13 @@
+# nsimage_steps.m (evidence/nsimage/) on macOS 27.0.1 (26A434), Apple M5. Verbatim output.
+
+== pocs/exr.exr
+[start]   resident=6.62 MiB
+
+  after NSData                              resident=6.69 MiB  Δ=+65536 bytes
+  after NSImage initWithData:               resident=10.80 MiB  Δ=+4374528 bytes
+  after [img size]                          resident=10.80 MiB  Δ=+4374528 bytes
+  after [img representations]               resident=10.80 MiB  Δ=+4374528 bytes
+  after rep pixel access                    resident=10.80 MiB  Δ=+4374528 bytes
+  after NSBitmapImageRep initWithData:      resident=1742.33 MiB  Δ=+1820016640 bytes
+  after NSBitmapImageRep pixel access       resident=1742.33 MiB  Δ=+1820016640 bytes
+  after @autoreleasepool drained            resident=1742.33 MiB  Δ=+1820016640 bytes

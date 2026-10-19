@@ -12,6 +12,33 @@ record. **No memory corruption or code execution is claimed.** The
 behaviour is a denial-of-service class issue: sustained resident
 commit, plus a Quick Look hang.
 
+## Status on macOS 27.0.1
+
+Re-tested on 2026-10-19 on **macOS 27.0.1 (build 26A434)**, Mac17,3
+with Apple M5, 16 GiB RAM, using the same `verify.sh`
+(`evidence/macos-27.0.1/`). **The behaviour still reproduces:**
+
+```
+EXR PoC (384 B)
+  task_info resident delta:  Run 1 = 1.25 GiB; Run 2 = 1.66 GiB; Run 3 = 1.85 GiB
+  /usr/bin/time -l peak:     1.85 GiB
+  NSBitmapImageRep initWithData:  +1.70 GiB
+  qlmanage:                  hangs, no thumbnail, killed after 20 s
+                             (qlmanage peak footprint 8.3 MiB)
+
+Legitimate EXR control (Xcode's twinkle.exr)
+  task_info resident delta:  5.20 MiB
+  /usr/bin/time -l peak:     14.7 MiB
+  qlmanage peak footprint:   59.3 MiB  (thumbnail produced in 1 s)
+```
+
+The per-run `task_info` delta varies more than on 26.5. An earlier
+run the same day (`evidence/macos-27.0.1/measurements-earlier-run.txt`)
+measured 1.13, 1.55 and 1.76 GiB. The fresh-process `/usr/bin/time`
+peak was 1.85 GiB both times.
+
+The sections below document the original measurements on macOS 26.5.
+
 ## Repository layout
 
 ```
@@ -24,6 +51,7 @@ evidence/     measurements.txt — captured run of verify.sh.
               nsimage/ — AppKit per-step reproducer; isolates
               NSBitmapImageRep impact.
               ios/ — iPhone test log (device IDs redacted).
+              macos-27.0.1/ — re-test on macOS 27.0.1.
 analysis/     exr-datawindow.md — full write-up, and a
               supplementary x86_64 disassembly excerpt.
 ```

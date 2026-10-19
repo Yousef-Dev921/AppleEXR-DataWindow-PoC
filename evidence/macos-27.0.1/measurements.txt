@@ -1,0 +1,204 @@
+# verify.sh capture on macOS 27.0.1 (26A434), Mac17,3 / Apple M5, 16 GiB.
+# Local checkout path replaced with <repo>; otherwise verbatim.
+
+================================================================
+  Verification report
+================================================================
+Date:        2026-10-19 16:07:46 UTC
+Host model:  Mac17,3
+Hardware:    Apple M5, 16 GiB RAM
+Kernel arch: 26A434 - arm64
+OS:          macOS 27.0.1 (26A434)
+Shell arch:  arm64 (uname -m: arm64)
+
+(building vm_probe from source: <repo>/reproduce/vm_probe.m -> <repo>/reproduce/vm_probe)
+<repo>/reproduce/vm_probe: Mach-O 64-bit executable arm64
+================================================================
+  Binary architecture verification
+================================================================
+
+vm_probe (the measurement tool):
+<repo>/reproduce/vm_probe: Mach-O 64-bit executable arm64
+  on-the-fly arch check when executed:
+    __aarch64__ = yes (compiled for arm64)
+    sysctl.proc_translated = 0 (0=native, 1=Rosetta)
+
+================================================================
+  PoC integrity
+================================================================
+c258ff1a045d8021d8c8717f8c465b8c87b9a7b2a07e858c01bfa0cd5600fcb3  <repo>/reproduce/../pocs/exr.exr
+
+Expected from SHA256SUMS.txt:
+# PoC integrity (SHA-256)
+c258ff1a045d8021d8c8717f8c465b8c87b9a7b2a07e858c01bfa0cd5600fcb3  exr.exr
+
+================================================================
+  Method #1 — task_info(TASK_VM_INFO)
+  Three back-to-back runs each.
+================================================================
+----------------------------------------------------------------
+  Run 1/3 — EXR PoC
+  file:   exr.exr
+  size:   384 bytes
+----------------------------------------------------------------
+[before] virtual=466.14 GiB resident=6.67 MiB phys_footprint=1.78 MiB peak_resid=6.67 MiB
+[probe] kind=image file=<repo>/reproduce/../pocs/exr.exr bytes=384
+  CGImageSourceCopyProperties -> 0x104e03430
+  count=0
+[after]  virtual=468.06 GiB resident=1.26 GiB phys_footprint=1.85 GiB peak_resid=1.28 GiB
+[peak]   virtual_high_water=527.06 GiB resident_high_water=1.28 GiB
+[delta]  virtual=+2065874944 resident=+1342537728
+[peak delta] virtual_peak=+65417592832 resident_peak=+1363214336
+
+----------------------------------------------------------------
+  Run 2/3 — EXR PoC
+  file:   exr.exr
+  size:   384 bytes
+----------------------------------------------------------------
+[before] virtual=466.14 GiB resident=6.67 MiB phys_footprint=1.78 MiB peak_resid=6.67 MiB
+[probe] kind=image file=<repo>/reproduce/../pocs/exr.exr bytes=384
+  CGImageSourceCopyProperties -> 0x1011b0380
+  count=0
+[after]  virtual=468.06 GiB resident=1.67 GiB phys_footprint=1.85 GiB peak_resid=1.71 GiB
+[peak]   virtual_high_water=497.56 GiB resident_high_water=1.71 GiB
+[delta]  virtual=+2065874944 resident=+1781366784
+[peak delta] virtual_peak=+33742209024 resident_peak=+1830944768
+
+----------------------------------------------------------------
+  Run 3/3 — EXR PoC
+  file:   exr.exr
+  size:   384 bytes
+----------------------------------------------------------------
+[before] virtual=466.14 GiB resident=6.67 MiB phys_footprint=1.78 MiB peak_resid=6.67 MiB
+[probe] kind=image file=<repo>/reproduce/../pocs/exr.exr bytes=384
+  CGImageSourceCopyProperties -> 0x101438380
+  count=0
+[after]  virtual=468.06 GiB resident=1.85 GiB phys_footprint=1.85 GiB peak_resid=1.85 GiB
+[peak]   virtual_high_water=497.56 GiB resident_high_water=1.85 GiB
+[delta]  virtual=+2065874944 resident=+1982595072
+[peak delta] virtual_peak=+33742274560 resident_peak=+1982644224
+
+================================================================
+  Method #1 control — legitimate files for fair comparison
+================================================================
+----------------------------------------------------------------
+  Control: legitimate EXR
+  file:   twinkle.exr
+  size:   246981 bytes
+----------------------------------------------------------------
+[before] virtual=466.14 GiB resident=6.94 MiB phys_footprint=2.05 MiB peak_resid=6.94 MiB
+[probe] kind=image file=/Applications/Xcode.app/Contents/SystemFrameworks/CoreRE.framework/Versions/A/Resources/twinkle.exr bytes=246981
+  CGImageSourceCopyProperties -> 0x1052801c0
+  count=1
+  [0] image=0x105281f90
+  [0] thumb=0x105286210
+[after]  virtual=466.23 GiB resident=12.14 MiB phys_footprint=4.67 MiB peak_resid=14.70 MiB
+[peak]   virtual_high_water=466.23 GiB resident_high_water=14.64 MiB
+[delta]  virtual=+93978624 resident=+5455872
+[peak delta] virtual_peak=+97206272 resident_peak=+8077312
+
+================================================================
+  Method #2 — /usr/bin/time -l peak memory footprint
+  (independent measurement using getrusage)
+================================================================
+naked reproducer binary:  Mach-O 64-bit executable arm64
+
+▼ EXR PoC ▼
+        0.48 real         0.04 user         0.10 sys
+          1990885376  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+              121746  page reclaims
+                   1  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                   0  voluntary context switches
+                 123  involuntary context switches
+          1503851401  instructions retired
+           489539715  cycles elapsed
+          1983875160  peak memory footprint
+
+▼ Control (legitimate EXR) ▼
+        0.06 real         0.03 user         0.02 sys
+            23576576  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+                1708  page reclaims
+                   1  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                   0  voluntary context switches
+                  74  involuntary context switches
+          1411235258  instructions retired
+           288572847  cycles elapsed
+            15450760  peak memory footprint
+
+================================================================
+  Method #3 — qlmanage (Quick Look thumbnailer)
+  Each invocation is bounded to 20 seconds — qlmanage hangs
+  indefinitely on the EXR PoC, so we kill it after the budget.
+================================================================
+
+▼ qlmanage thumbnailing the EXR PoC (20s budget) ▼
+▲▲▲ qlmanage HUNG — killed after 20s (process never completed) ▲▲▲
+    File: /tmp/qlcheck/exr_poc.exr
+    Last captured output (may include partial /usr/bin/time -l data):
+    time: command terminated abnormally
+           20.23 real         0.02 user         0.01 sys
+                28409856  maximum resident set size
+                       0  average shared memory size
+                       0  average unshared data size
+                       0  average unshared stack size
+                    2048  page reclaims
+                       2  page faults
+                       0  swaps
+                       0  block input operations
+                       0  block output operations
+                       0  messages sent
+                       0  messages received
+                       0  signals received
+                       1  voluntary context switches
+                     140  involuntary context switches
+               228329392  instructions retired
+                89068659  cycles elapsed
+                 8684336  peak memory footprint
+    time: signal: Invalid argument
+
+▼ qlmanage thumbnailing the Control EXR (20s budget) ▼
+  (qlmanage completed in 1s)
+Testing Quick Look thumbnails with files:
+	/tmp/qlcheck/control.exr
+* /tmp/qlcheck/control.exr produced one thumbnail
+Done producing thumbnails
+        0.07 real         0.07 user         0.01 sys
+            53084160  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+                4268  page reclaims
+                   1  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                   2  voluntary context switches
+                 261  involuntary context switches
+           868176985  instructions retired
+           280680607  cycles elapsed
+            62210840  peak memory footprint
+
+================================================================
+  Verification complete.
+================================================================
