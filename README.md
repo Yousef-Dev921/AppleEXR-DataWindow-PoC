@@ -168,6 +168,10 @@ user-visible DoS. The log is in `evidence/ios/` for completeness.
   OpenEXR file whose header carries out-of-range `dataWindow` values.
   It contains no executable code and no payload.
 
+## Author
+
+Yousef — [@yousef_dev921](https://x.com/yousef_dev921)
+
 ## License
 
 The text, scripts, and analysis in this repository are released under
