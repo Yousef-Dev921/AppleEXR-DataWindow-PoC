@@ -1,0 +1,10 @@
+# Quick Look check on macOS 27.0.1 (26A434), Mac17,3.
+# Each file thumbnailed with reproduce/ql_wrap.sh, 12 s budget.
+# header_only.exr = the 8-byte OpenEXR magic+version only (762f3101 02000000).
+# broken.png      = PNG signature followed by 300 bytes 00 01 02 ... (not a valid PNG).
+# control.exr     = Xcode's twinkle.exr (legitimate).
+
+poc.exr          hung (killed after 12 s)   qlmanage peak footprint 8.3 MiB
+control.exr      thumbnail produced         qlmanage peak footprint 59.5 MiB
+header_only.exr  hung (killed after 12 s)   qlmanage peak footprint 7.9 MiB
+broken.png       hung (killed after 12 s)   qlmanage peak footprint 8.0 MiB

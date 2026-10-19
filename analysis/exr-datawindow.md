@@ -1,5 +1,9 @@
 # `libAppleEXR.dylib` — unbounded `dataWindow` extents
 
+> All measurements in this document were taken on macOS 26.5 (25F71).
+> The memory commit still reproduces on macOS 27.0.1 (26A434); see the
+> status section of the README.
+
 ## Where the bug lives
 
 ```
@@ -58,8 +62,10 @@ A nominal 512-pixel width and a derived height of about 1.98
 billion pixels. This extent propagates through the intermediate
 frames and reaches `CreateDecompressedLocations` as a large
 `arg3`, which drives the right-shift product into the multi-GiB
-range. In the captured runs the underlying request is approximately
-15.8 GiB.
+range. The exact requested size was not captured. In the captured
+runs the process's virtual-memory high-water mark rose by 16.7 to
+60.9 GiB above baseline (`[peak delta] virtual_peak` in
+`evidence/measurements.txt`), while about 1.85 GiB became resident.
 
 ## What the existing checks catch, and what they miss
 
@@ -73,7 +79,7 @@ NULL-checks the returned pointer. Together these handle:
 
 What they do not handle: a value that is extremely large but
 remains arithmetically valid (no `uint64_t` overflow). The
-missing check is an earlier bound on attacker-controlled image
+missing check is an earlier bound on the file-supplied image
 extents.
 
 ## Suggested fix
@@ -116,8 +122,9 @@ the two methods agree to within about 0.06%.
 The process hangs with no progress for at least 20 seconds and
 produces no thumbnail; the wrapper kills it after the budget.
 The `/usr/bin/time -l` line for that hung process shows only
-`peak memory footprint = 9,192,072` (≈ 8.8 MiB) — qlmanage never
-reaches the inner decode path that drives the larger commit.
+`peak memory footprint = 9,192,072` (≈ 8.8 MiB). That figure covers
+only the `qlmanage` process itself; the memory of the Quick Look
+service processes that do the decoding was not measured.
 
 So for the qlmanage path, only the hang is claimed, not the memory
 commit. The 1.85 GiB commit is observed through the direct
@@ -128,6 +135,12 @@ another high-commit site to `NSBitmapImageRep initWithData:`
 The same `qlmanage` invocation on the control EXR completes in
 about 1 s and produces a thumbnail with `peak memory footprint =
 69,812,872` (~67 MiB).
+
+Caveat: on macOS 27.0.1, `qlmanage` also hangs on unrelated broken
+files (an 8-byte EXR header and an invalid PNG;
+`evidence/macos-27.0.1/quicklook-check.txt`). The hang by itself is
+therefore not specific to this defect. Whether that was also true on
+26.5 was not checked.
 
 ## Legitimate EXR control
 
@@ -140,8 +153,9 @@ task_info resident delta:        +5,177,344    (4.94 MiB)
 qlmanage peak memory footprint:  69,812,872    (67 MiB, completes in 1 s)
 ```
 
-A legitimate EXR file ~640× larger than the PoC uses ~400× less
-resident memory through the same code path.
+A legitimate EXR file ~640× larger than the PoC uses about 380×
+(`task_info`) / 300× (`/usr/bin/time`) less memory through the same
+code path.
 
 ## PoC layout (384 bytes)
 
@@ -154,7 +168,7 @@ offset  bytes                       meaning
 0x82    "dataWindow" \0 "box2i" \0
 0x93    10 00 00 00                 box2i attribute size = 16
 0x97    00 00 00 00                 xMin = 0
-0x9b    ff d8 ff 89                 yMin = 0x89ffd8ff  ← malicious
+0x9b    ff d8 ff 89                 yMin = 0x89ffd8ff  ← out of range
 0x9f    ff 01 00 00                 xMax = 0x000001ff = 511
 0xa3    00 00 00 00                 yMax = 0
 ...     rest of header is structurally well-formed
