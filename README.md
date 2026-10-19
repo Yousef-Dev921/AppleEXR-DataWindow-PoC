@@ -173,7 +173,3 @@ user-visible DoS. The log is in `evidence/ios/` for completeness.
 The text, scripts, and analysis in this repository are released under
 the MIT License — see [LICENSE](LICENSE). The PoC file in `pocs/` is
 provided for research and reproducibility only.
-
----
-
-Made with ❤️ by Yousef
